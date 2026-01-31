@@ -1,27 +1,16 @@
 package com.accord.myapp
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import com.accord.myapp.ui.login.LoginScreen
-import com.accord.myapp.ui.theme.MyAppTheme
+import androidx.appcompat.app.AppCompatActivity
+import com.accord.myapp.ui.login.LoginActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            MyAppTheme {
-                Surface(
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    // Entry screen (Login)
-                    LoginScreen()
-                }
-            }
-        }
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
     }
 }
