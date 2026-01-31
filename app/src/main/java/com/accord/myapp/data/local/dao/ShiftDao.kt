@@ -42,4 +42,7 @@ interface ShiftDao {
         WHERE date = :date
     """)
     suspend fun deleteShiftsByDate(date: LocalDate)
+
+    @Query("SELECT * FROM shifts ORDER BY date ASC")
+suspend fun getAllShifts(): List<ShiftEntity>
 }
