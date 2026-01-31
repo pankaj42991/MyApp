@@ -3,9 +3,10 @@ package com.accord.myapp.ui.report
 import android.content.Context
 import android.os.Environment
 import com.accord.myapp.data.local.entity.ShiftEntity
-import com.itextpdf.text.Document
-import com.itextpdf.text.Paragraph
-import com.itextpdf.text.pdf.PdfWriter
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.Paragraph
 import java.io.File
 import java.io.FileOutputStream
 
