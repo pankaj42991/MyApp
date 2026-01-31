@@ -6,6 +6,7 @@ import com.accord.myapp.data.local.dao.ShiftDao
 import com.accord.myapp.data.local.entity.CompOffEntity
 import com.accord.myapp.data.local.entity.EmployeeEntity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first  // ✅ add this
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -17,18 +18,18 @@ class CompOffEngine(
 ) {
 
     suspend fun processCompOffs(startDate: LocalDate) = withContext(Dispatchers.IO) {
-        val employees = employeeDao.getActiveEmployees()
-        val empList = employees // Assume collector outside
+        // ✅ Only this line changed: Flow -> List
+        val employees = employeeDao.getActiveEmployees().first()
 
         for (i in 0..6) {
             val date = startDate.plusDays(i.toLong())
             val dayOfWeek = date.dayOfWeek
 
             when {
-                isHoliday(date) -> earnCompOff(date, empList)
+                isHoliday(date) -> earnCompOff(date, employees)
                 dayOfWeek == DayOfWeek.MONDAY ||
                 dayOfWeek == DayOfWeek.WEDNESDAY ||
-                (dayOfWeek == DayOfWeek.SATURDAY && isWorkingSaturday(date)) -> useCompOff(date, empList)
+                (dayOfWeek == DayOfWeek.SATURDAY && isWorkingSaturday(date)) -> useCompOff(date, employees)
             }
         }
     }
