@@ -20,7 +20,7 @@ class ShiftGenerator(
 
     suspend fun generateWeekShifts(startDate: LocalDate) = withContext(Dispatchers.IO) {
         val employees = employeeDao.getActiveEmployees()  // Flow convert to list
-        val empList = employees.map { it }  // Assuming Flow collector done outside
+        val empList = employees.toList()  // Assuming Flow collector done outside
 
         for (i in 0..6) {
             val date = startDate.plusDays(i.toLong())
