@@ -11,7 +11,7 @@ import java.io.File
 
 class BackupManager(private val context: Context) {
 
-    private val db = AppDatabase.getInstance(context)
+    private val db = AppDatabase.getDatabase(context)
     private val pdfGenerator = PDFReportGenerator(context)
 
     fun syncToDrive() {
