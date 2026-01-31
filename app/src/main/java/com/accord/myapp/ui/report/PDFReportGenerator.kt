@@ -8,21 +8,21 @@ import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Paragraph
 import java.io.File
-import java.io.FileOutputStream
 
 class PDFReportGenerator(private val context: Context) {
 
     fun generateWeeklyReport(shifts: List<ShiftEntity>, fileName: String = "Weekly_Report.pdf") {
-        val doc = Document()
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
-        PdfWriter.getInstance(doc, FileOutputStream(file))
-        doc.open()
-        doc.add(Paragraph("Weekly Shift Report\n\n"))
+        val writer = PdfWriter(file)
+        val pdfDoc = PdfDocument(writer)
+        val document = Document(pdfDoc)
+
+        document.add(Paragraph("Weekly Shift Report\n\n"))
 
         shifts.forEach {
-            doc.add(Paragraph("${it.date}: ${it.employeeId} - ${it.shiftType} (${it.startTime}-${it.endTime})"))
+            document.add(Paragraph("${it.date}: ${it.employeeId} - ${it.shiftType} (${it.startTime}-${it.endTime})"))
         }
 
-        doc.close()
+        document.close()
     }
 }
