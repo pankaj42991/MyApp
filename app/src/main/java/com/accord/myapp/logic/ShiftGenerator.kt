@@ -7,6 +7,7 @@ import com.accord.myapp.data.local.dao.ShiftDao
 import com.accord.myapp.data.local.entity.ShiftEntity
 import com.accord.myapp.data.local.entity.EmployeeEntity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -19,25 +20,24 @@ class ShiftGenerator(
 ) {
 
     suspend fun generateWeekShifts(startDate: LocalDate) = withContext(Dispatchers.IO) {
-        val employees = employeeDao.getActiveEmployees()  // Flow convert to list
-        val empList = employees.toList()  // Assuming Flow collector done outside
+        // ✅ Flow -> List fix
+        val employees = employeeDao.getActiveEmployees().first()
 
         for (i in 0..6) {
             val date = startDate.plusDays(i.toLong())
             val dayOfWeek = date.dayOfWeek
-
             val isHoliday = isHoliday(date)
 
             if (isHoliday) {
-                assignHolidayShift(date, empList)
+                assignHolidayShift(date, employees)
             } else {
                 when (dayOfWeek) {
-                    DayOfWeek.MONDAY -> assignMondayShift(date, empList)
+                    DayOfWeek.MONDAY -> assignMondayShift(date, employees)
                     DayOfWeek.TUESDAY,
                     DayOfWeek.WEDNESDAY,
                     DayOfWeek.THURSDAY,
-                    DayOfWeek.FRIDAY -> assignWeekdayShift(date, empList)
-                    DayOfWeek.SATURDAY -> assignSaturdayShift(date, empList)
+                    DayOfWeek.FRIDAY -> assignWeekdayShift(date, employees)
+                    DayOfWeek.SATURDAY -> assignSaturdayShift(date, employees)
                     else -> {}
                 }
             }
@@ -49,15 +49,12 @@ class ShiftGenerator(
     // ------------------------------
 
     private suspend fun isHoliday(date: LocalDate): Boolean {
-        // Sunday
         if (date.dayOfWeek == DayOfWeek.SUNDAY) return true
 
-        // 2nd / 4th Saturday
         val weekOfMonth = ((date.dayOfMonth - 1) / 7) + 1
         if (date.dayOfWeek == DayOfWeek.SATURDAY && (weekOfMonth == 2 || weekOfMonth == 4))
             return true
 
-        // Festival holiday
         val festival = holidayDao.getHolidayByDate(date)
         if (festival != null) return true
 
@@ -69,8 +66,6 @@ class ShiftGenerator(
     // ------------------------------
 
     private suspend fun assignWeekdayShift(date: LocalDate, employees: List<EmployeeEntity>) {
-        // Tuesday-Friday
-        // Fixed morning employee = Pankaj
         val morning = employees.first { it.fixedMorning }
         val general = employees.filter { !it.fixedMorning }.take(2)
         val mid = employees.filter { !it.fixedMorning && !general.contains(it) }.take(1)
@@ -146,25 +141,16 @@ class ShiftGenerator(
     }
 
     private suspend fun assignMondayShift(date: LocalDate, employees: List<EmployeeEntity>) {
-        // Monday = total 5 employees
-        // logic similar to weekday but only 5 assigned
-        assignWeekdayShift(date, employees)  // for simplicity
+        assignWeekdayShift(date, employees) // logic same as weekday
     }
 
     private suspend fun assignSaturdayShift(date: LocalDate, employees: List<EmployeeEntity>) {
-        // check if 1st/3rd/5th or 2nd/4th
         val weekOfMonth = ((date.dayOfMonth - 1) / 7) + 1
-        if (weekOfMonth == 2 || weekOfMonth == 4) {
-            // treated as holiday → assignHolidayShift
-            assignHolidayShift(date, employees)
-        } else {
-            // working Saturday → 4 employees
-            assignWeekdayShift(date, employees)  // for simplicity
-        }
+        if (weekOfMonth == 2 || weekOfMonth == 4) assignHolidayShift(date, employees)
+        else assignWeekdayShift(date, employees)
     }
 
     private suspend fun assignHolidayShift(date: LocalDate, employees: List<EmployeeEntity>) {
-        // Only 2 employees
         val selected = employees.take(2)
         val shifts = mutableListOf<ShiftEntity>()
 
@@ -178,6 +164,7 @@ class ShiftGenerator(
                 isHoliday = true
             )
         )
+
         shifts.add(
             ShiftEntity(
                 date = date,
