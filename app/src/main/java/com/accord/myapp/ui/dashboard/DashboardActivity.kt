@@ -2,19 +2,9 @@ package com.accord.myapp.ui.dashboard
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.accord.myapp.databinding.ActivityDashboardBinding
 import com.accord.myapp.logic.BackupManager
-import androidx.appcompat.app.AppCompatDelegate
-
-fun toggleDarkMode(isDark: Boolean) {
-    if (isDark) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-    else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-}
-
-// Usage with Switch in DashboardActivity
-binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
-    toggleDarkMode(isChecked)
-}
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -23,15 +13,31 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // -----------------------------
+        // Theme switch listener (✅ class ke andar)
+        binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
+            toggleDarkMode(isChecked)
+        }
+
         // Initialize Backup Manager
-        // -----------------------------
         backupManager = BackupManager(this)
 
-        // Sync local DB to Google Drive automatically
+        // Sync local DB to Google Drive
         backupManager.syncToDrive()
+    }
+
+    private fun toggleDarkMode(isDark: Boolean) {
+        if (isDark) {
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES
+            )
+        } else {
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_NO
+            )
+        }
     }
 }
