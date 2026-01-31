@@ -34,6 +34,15 @@
         android:layout_marginTop="16dp"/>
 
     <Button
+    android:id="@+id/btnGoogleLogin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Login with Google"
+    android:layout_marginTop="16dp"
+    android:backgroundTint="@color/blue_500"
+    android:textColor="@color/white"/>
+
+    <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
