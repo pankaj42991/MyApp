@@ -1,2 +1,7 @@
-// Include the app module
-include ':app'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
