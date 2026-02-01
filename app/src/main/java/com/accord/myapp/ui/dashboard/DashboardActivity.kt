@@ -3,8 +3,10 @@ package com.accord.myapp.ui.dashboard
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.accord.myapp.R
 import com.accord.myapp.databinding.ActivityDashboardBinding
 import com.accord.myapp.logic.BackupManager
+import com.accord.myapp.ui.calendar.CalendarFragment
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -17,27 +19,29 @@ class DashboardActivity : AppCompatActivity() {
         binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Theme switch listener (✅ class ke andar)
+        // ✅ Load Calendar Fragment (ONLY ONCE)
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.calendar_container, CalendarFragment())
+                .commit()
+        }
+
+        // Theme switch
         binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
             toggleDarkMode(isChecked)
         }
 
-        // Initialize Backup Manager
+        // Backup
         backupManager = BackupManager(this)
-
-        // Sync local DB to Google Drive
         backupManager.syncToDrive()
     }
 
     private fun toggleDarkMode(isDark: Boolean) {
-        if (isDark) {
-            AppCompatDelegate.setDefaultNightMode(
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDark)
                 AppCompatDelegate.MODE_NIGHT_YES
-            )
-        } else {
-            AppCompatDelegate.setDefaultNightMode(
+            else
                 AppCompatDelegate.MODE_NIGHT_NO
-            )
-        }
+        )
     }
 }
