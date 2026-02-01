@@ -36,9 +36,7 @@
             android:name=".ui.dashboard.DashboardActivity"
             android:exported="false"/>
 
-        <!-- Optional: Any other activities can be added here -->
-        <activity android:name=".ui.calendar.CalendarFragment" android:exported="false"/>
-        <activity android:name=".ui.report.PDFReportGenerator" android:exported="false"/>
+        
 
         <!-- Optional: For Google Sign-In -->
         <meta-data
